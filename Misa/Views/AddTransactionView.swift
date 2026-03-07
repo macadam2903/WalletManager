@@ -71,7 +71,7 @@ struct AddTransactionView: View {
                                 } else {
                                     Picker("Pocket", selection: pocketSelection) {
                                         ForEach(visiblePockets) { pocket in
-                                            Label(pocket.name, systemImage: "wallet.pass")
+                                            Text("\(pocket.emoji ?? "💼") \(pocket.name)")
                                                 .tag(pocket.id)
                                         }
                                     }
