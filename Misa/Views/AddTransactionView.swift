@@ -23,6 +23,8 @@ struct AddTransactionView: View {
     }
 
     let preselectedPocketID: UUID?
+    let initialType: TransactionType
+    let autoFocusNameOnAppear: Bool
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
@@ -36,6 +38,7 @@ struct AddTransactionView: View {
     @State private var transactionDate = Date.now
 
     @State private var showValidationAlert = false
+    @FocusState private var isNameFieldFocused: Bool
 
     var body: some View {
         NavigationStack {
@@ -83,6 +86,7 @@ struct AddTransactionView: View {
                                 VStack(spacing: 12) {
                                     TextField("Name (e.g. Groceries)", text: $name)
                                         .textInputAutocapitalization(.words)
+                                        .focused($isNameFieldFocused)
                                         .padding(12)
                                         .background(Color.black.opacity(0.16), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
 
@@ -151,7 +155,7 @@ struct AddTransactionView: View {
                     }
                 }
             }
-            .navigationTitle("New Transaction")
+            .navigationTitle(selectedType == .income ? "New Income" : "New Expense")
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Cancel") {
@@ -165,11 +169,18 @@ struct AddTransactionView: View {
                 Text("Please provide a name, amount and pocket.")
             }
             .onAppear {
+                selectedType = initialType
                 if let preselectedPocketID,
                    visiblePockets.contains(where: { $0.id == preselectedPocketID }) {
                     selectedPocketID = preselectedPocketID
                 } else {
                     selectedPocketID = visiblePockets.first?.id
+                }
+
+                if autoFocusNameOnAppear {
+                    DispatchQueue.main.async {
+                        isNameFieldFocused = true
+                    }
                 }
             }
         }

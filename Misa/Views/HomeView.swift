@@ -7,6 +7,8 @@ struct HomeView: View {
 
     @State private var selectedPocketID: UUID?
     @State private var showAddTransactionSheet = false
+    @State private var addTransactionType: AddTransactionView.TransactionType = .income
+    @State private var autoFocusTransactionName = false
     @State private var selectedTransaction: Transaction?
 
     var body: some View {
@@ -44,13 +46,17 @@ struct HomeView: View {
                     .padding(.top, 12)
                 }
 
-                addTransactionButton
+                addTransactionButtons
                     .padding(.trailing, 20)
                     .padding(.bottom, 20)
             }
             .navigationTitle("")
             .sheet(isPresented: $showAddTransactionSheet) {
-                AddTransactionView(preselectedPocketID: selectedPocket?.id)
+                AddTransactionView(
+                    preselectedPocketID: selectedPocket?.id,
+                    initialType: addTransactionType,
+                    autoFocusNameOnAppear: true
+                )
                     .presentationDetents([.medium, .large])
                     .presentationDragIndicator(.visible)
             }
@@ -137,25 +143,45 @@ struct HomeView: View {
         .cardSurface(cornerRadius: 16)
     }
 
-    private var addTransactionButton: some View {
-        Button {
-            withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
-                showAddTransactionSheet = true
+    private var addTransactionButtons: some View {
+        HStack(spacing: 10) {
+            Button {
+                addTransactionType = .income
+                autoFocusTransactionName = false
+                withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
+                    showAddTransactionSheet = true
+                }
+            } label: {
+                addButtonLabel(title: "New Income", color: Color.green)
             }
-        } label: {
-            Label("New Transaction", systemImage: "plus.circle.fill")
-                .font(.headline)
-                .fontWeight(.semibold)
-                .padding(.horizontal, 18)
-                .padding(.vertical, 14)
-                .background(
-                    Capsule(style: .continuous)
-                        .fill(Color.accentColor)
-                )
-                .foregroundStyle(.white)
-                .shadow(color: Color.accentColor.opacity(0.4), radius: 10, x: 0, y: 6)
+            .accessibilityIdentifier("newIncomeFAB")
+
+            Button {
+                addTransactionType = .expense
+                autoFocusTransactionName = true
+                withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
+                    showAddTransactionSheet = true
+                }
+            } label: {
+                addButtonLabel(title: "New Expense", color: .red)
+            }
+            .accessibilityIdentifier("newExpenseFAB")
         }
-        .accessibilityIdentifier("newTransactionFAB")
+    }
+
+    private func addButtonLabel(title: String, color: Color) -> some View {
+        Label(title, systemImage: "plus.circle.fill")
+            .font(.headline)
+            .fontWeight(.semibold)
+            .padding(.horizontal, 31)
+            .frame(alignment: .center)
+            .padding(.vertical, 14)
+            .background(
+                Capsule(style: .continuous)
+                    .fill(color)
+            )
+            .foregroundStyle(.white)
+            .shadow(color: color.opacity(0.4), radius: 10, x: 0, y: 6)
     }
 
     private var selectedPocket: Pocket? {
