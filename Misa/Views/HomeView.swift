@@ -6,14 +6,12 @@ struct HomeView: View {
     @Query private var pockets: [Pocket]
 
     @State private var selectedPocketID: UUID?
-    @State private var showAddTransactionSheet = false
-    @State private var addTransactionType: AddTransactionView.TransactionType = .income
-    @State private var autoFocusTransactionName = false
+    @State private var addTransactionType: AddTransactionView.TransactionType? = nil
     @State private var selectedTransaction: Transaction?
 
     var body: some View {
         NavigationStack {
-            ZStack(alignment: .bottomTrailing) {
+            ZStack(alignment: .bottom) {
                 Color.appThemeBackground
                     .ignoresSafeArea()
 
@@ -47,18 +45,17 @@ struct HomeView: View {
                 }
 
                 addTransactionButtons
-                    .padding(.trailing, 20)
                     .padding(.bottom, 20)
             }
             .navigationTitle("")
-            .sheet(isPresented: $showAddTransactionSheet) {
+            .sheet(item: $addTransactionType) { type in
                 AddTransactionView(
                     preselectedPocketID: selectedPocket?.id,
-                    initialType: addTransactionType,
+                    initialType: type,
                     autoFocusNameOnAppear: true
                 )
-                    .presentationDetents([.medium, .large])
-                    .presentationDragIndicator(.visible)
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
             }
             .sheet(item: $selectedTransaction) { transaction in
                 EditTransactionView(transaction: transaction)
@@ -146,36 +143,27 @@ struct HomeView: View {
     private var addTransactionButtons: some View {
         HStack(spacing: 10) {
             Button {
-                addTransactionType = .income
-                autoFocusTransactionName = false
-                withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
-                    showAddTransactionSheet = true
-                }
-            } label: {
-                addButtonLabel(title: "New Income", color: Color.green)
-            }
-            .accessibilityIdentifier("newIncomeFAB")
-
-            Button {
                 addTransactionType = .expense
-                autoFocusTransactionName = true
-                withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
-                    showAddTransactionSheet = true
-                }
             } label: {
-                addButtonLabel(title: "New Expense", color: .red)
+                addButtonLabel(title: "New Expense", color: .red, icon: "minus.circle.fill")
             }
             .accessibilityIdentifier("newExpenseFAB")
+            Button {
+                addTransactionType = .income
+            } label: {
+                addButtonLabel(title: "New Income", color: .green, icon: "plus.circle.fill")
+            }
+            .accessibilityIdentifier("newIncomeFAB")
         }
+        .frame(maxWidth: .infinity, alignment: .center)
     }
 
-    private func addButtonLabel(title: String, color: Color) -> some View {
-        Label(title, systemImage: "plus.circle.fill")
+    private func addButtonLabel(title: String, color: Color, icon: String) -> some View {
+        Label(title, systemImage: icon)
             .font(.headline)
             .fontWeight(.semibold)
-            .padding(.horizontal, 31)
-            .frame(alignment: .center)
             .padding(.vertical, 14)
+            .frame(width: 180)
             .background(
                 Capsule(style: .continuous)
                     .fill(color)

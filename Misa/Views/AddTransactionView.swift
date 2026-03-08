@@ -168,7 +168,7 @@ struct AddTransactionView: View {
             } message: {
                 Text("Please provide a name, amount and pocket.")
             }
-            .onAppear {
+            .task(id: initialType) {
                 selectedType = initialType
                 if let preselectedPocketID,
                    visiblePockets.contains(where: { $0.id == preselectedPocketID }) {
