@@ -233,6 +233,7 @@ struct AddTransactionView: View {
               amount > 0
         else {
             showValidationAlert = true
+            Haptics.error()
             return
         }
 
@@ -251,7 +252,7 @@ struct AddTransactionView: View {
         modelContext.insert(transaction)
         try? modelContext.save()
 
-        Haptics.saveImpact()
+        Haptics.transactionSuccess()
         dismiss()
     }
 }

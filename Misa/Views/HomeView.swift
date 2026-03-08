@@ -143,12 +143,14 @@ struct HomeView: View {
     private var addTransactionButtons: some View {
         HStack(spacing: 10) {
             Button {
+                Haptics.buttonTap()
                 addTransactionType = .expense
             } label: {
                 addButtonLabel(title: "New Expense", color: .red, icon: "minus.circle.fill")
             }
             .accessibilityIdentifier("newExpenseFAB")
             Button {
+                Haptics.buttonTap()
                 addTransactionType = .income
             } label: {
                 addButtonLabel(title: "New Income", color: .green, icon: "plus.circle.fill")

@@ -55,6 +55,22 @@ struct SettingsView: View {
                         }
                     }
                     .padding(20)
+                    
+                    VStack(spacing: 6) {
+                        Text("Készítette Macza Ádám")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                        
+                        Link("GitHub", destination: URL(string: "https://github.com/macadam2903/WalletManager")!)
+                            .font(.footnote)
+                            .foregroundStyle(.blue)
+                        Link("Instagram", destination: URL(string: "https://www.instagram.com/macadam0329/")!)
+                            .font(.footnote)
+                            .foregroundStyle(.blue)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.top, 8)
+                    
                 }
             }
             .navigationTitle("Settings")
